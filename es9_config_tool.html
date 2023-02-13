@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<head>
+
+<title>ES-9 Configuration Tool</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Mono">
+
+<style>
+body {
+	font-family: 'PT Sans', serif;
+	font-size: 16px;
+}
+button.big {
+	font-size: 120%;
+}
+input, select, button {
+	font-family: 'PT Sans', serif;
+	font-size: 11px;
+}
+div.small {
+	font-size: 80%;
+}
+table {
+	margin-bottom: 5px;
+}
+table.routebox {
+  border: 1px solid black;
+  display: inline-block;
+}
+table.mixtable {
+  border: 1px solid black;
+  display: inline-block;
+  margin-right: 10px;
+}
+table.eqtable {
+  border: 1px solid black;
+  display: inline-block;
+  margin-right: 10px;
+}
+td.tc {
+	text-align: center;
+	background-color: #c0c0c0;
+	font-size: 80%;
+}
+td.tc_a {
+	text-align: center;
+	background-color: #e0e0e0;
+	font-size: 80%;
+}
+td.ic {
+	text-align: center;
+}
+tr.a {
+	background-color: #e0e0e0;
+}
+th {
+	background-color: #c0c0c0;
+	font-size: 80%;
+}
+td.mix {
+  width: 30px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+td.rawmix {
+  width: 15px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+td.mixt {
+	text-align: center;
+	font-size: 50%;
+}
+div.rawmixt {
+	text-align: center;
+	font-size: 50%;
+	transform: rotate(180deg) translate(-4px, 0px);
+	-webkit-writing-mode: vertical-rl;
+	height: 20px;
+}
+td.mixtag {
+	text-align: center;
+	font-size: 80%;
+	background: #f0f0f0;
+}
+td.linkcb {
+	text-align: right;
+	font-size: 80%;
+}
+div.mixchtag {
+	text-align: left;
+	font-size: 60%;
+	transform: rotate(180deg) translate(-4px, 0px);
+	height: 40px;
+	-webkit-writing-mode: vertical-rl;
+}
+div.rawmixchtag {
+	text-align: left;
+	font-size: 60%;
+	transform: rotate(180deg);
+	height: 40px;
+	-webkit-writing-mode: vertical-rl;
+}
+textarea {
+    font-family: 'PT Mono', monospace;
+	font-size: 11px;
+}
+td.outDCt {
+	text-align: center;
+	font-size: 50%;
+	width:100px;
+}
+td.outDCtag {
+	text-align: center;
+	font-size: 80%;
+	background: #f0f0f0;
+	width:150px;
+}
+td.eqtag {
+	text-align: center;
+	font-size: 80%;
+	background: #f0f0f0;
+	width:100px;
+}
+div.eqFt {
+	font-size: 80%;
+}
+div.eqQt {
+	font-size: 80%;
+}
+div.eqGt {
+	font-size: 80%;
+}
+label.eqenable {
+	font-size: 80%;
+}
+div.innereq {
+     border: 1px solid #e6e6e6; 
+}
+input.dc {
+  width: 800px;
+  -webkit-appearance: none; 
+     border: 1px solid #e6e6e6; 
+     background-color: #e6e6e6; 
+}
+input.mix {
+  -webkit-appearance: slider-vertical;
+  width: 20px;
+  height: 128px;
+}
+input.rawmix {
+  -webkit-appearance: slider-vertical;
+  width: 10px;
+  height: 64px;
+}
+input[type="range"].pan 
+{ 
+     cursor: pointer;
+     width: 100px !important;
+     -webkit-appearance: none; 
+     z-index: 200; 
+     width: 10px; 
+     border: 1px solid #e6e6e6; 
+     background-color: #e6e6e6; 
+     background-image: -webkit-linear-gradient(right, #e6e6e6, #d2d2d2); 
+}
+input[type="range"].pan:focus
+{
+     border: 0 !imporant; 
+	outline: none !important; 
+}
+input[type="range"].pan::-webkit-slider-thumb 
+{
+     -webkit-appearance: none; 
+     width: 10px; 
+     height: 10px; 
+	background-color: #555; 
+     background-image: -webkit-linear-gradient(right, #4DDBFF, #00CCFF); 
+}
+input[type="range"].pan {
+     -webkit-border-radius: 20px; 
+}
+input[type="range"].pan::-webkit-slider-thumb {
+     -webkit-border-radius: 5px; 
+}
+input.pan
+{
+     -webkit-transform:rotate(270deg); 
+     margin-left: -65px;
+     margin-right: -60px;
+}
+td.pan {
+  width: 20px;
+  padding-left: 0px;
+  padding-right: 0px;
+  text-align: center;
+}
+
+.mixtitle {
+	font-weight: bold;
+	font-size: 120%;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	display: inline-block;
+}
+
+div.upload {
+	border: 1px;
+	border-style: dotted;
+	display: inline-block;
+}
+</style>
+
+<script>
+function showHide( id, show ) {
+	var ta = document.getElementById( id );
+	ta.style.display = show ? "" : "none";
+}
+function log( t ) {
+	var ta = document.getElementById( "log" );
+	var d = new Date();
+	var dd = d.toLocaleTimeString();
+	ta.value = ta.value + "\n" + dd + ": " + t;
+	ta.scrollTop = ta.scrollHeight;
+	return dd;
+}
+function status( t ) {
+    document.getElementById( "status" ).innerHTML = "Web MIDI status: " + t;
+}
+function nybbleChar( n ) {
+	if ( n >= 10 ) {
+		return String.fromCharCode( 'A'.charCodeAt( 0 ) + n - 10 );
+	}
+	return String.fromCharCode( '0'.charCodeAt( 0 ) + n );
+}
+function makeMsgSysEx() {
+	var d = [0xF0, 0x00, 0x21, 0x27, 0x19, 0x02]
+	var len = d.length
+	var str = ""
+	for ( var i = 0; i < len; ++i ) {
+		str += String.fromCharCode( d[i] );
+	} 
+	var text = "Hello!\nThis message\nwas sent from\nthe config tool.";
+	str += text;
+	str += String.fromCharCode( 0xF7 );
+	return str;
+}
+function dumpSysex( data, id, prefix ) {
+	var len = data.length
+	var h = prefix
+	for ( var i = 0; i < len; ++i ) {
+		var b = data[ i ];
+		h += nybbleChar( b >> 4 );
+		h += nybbleChar( b & 0xf );
+		h += " ";
+		if ( ( i & 0xf ) === 0xf ) {
+			h += "\n";
+		}
+	} 
+	document.getElementById( id ).value = h;
+}
+function parseMixShared( data, c ) {
+	var ch, mix;
+	for ( mix=0; mix<16; ++mix ) {
+		for ( ch=0; ch<8; ++ch ) {
+			var w = ( data[c] << 14 ) | ( data[c+1] << 7 ) | ( data[c+2] << 0 );
+			c += 3;
+			var v = w;
+			var id = "mix" + mix + "_" + ch;
+			document.getElementById( id ).value = w;
+			updateMixText( mix, ch, v );
+		}
+	}
+	return c;
+}
+function parseMixDump( data ) {
+	var c = 0;
+    c = parseMixShared( data, c );
+    var i;
+    for ( i=0; i<128; ++i ) {
+    	var v = data[c]; c++;
+    	var p = data[c]; c++;
+    	var mix = i >> 3;
+    	var ch = i & 7;
+		var e = document.getElementById( "vmix" + mix + "_" + ch );
+		if ( e != null ) {
+			e.value = v;
+			updateVMixText( mix, ch );
+		}
+		var e = document.getElementById( "vpan" + mix + "_" + ch );
+		if ( e != null ) {
+			e.value = p - 63;
+			updateVPanText( mix, ch );
+		}
+    }
+}
+function parseUsage( data ) {
+	var i;
+	var u0 = ( data[0] << 7 ) | data[1];
+	var u1 = ( data[2] << 7 ) | data[3];
+	var u2 = ( data[4] << 7 ) | data[5];
+	var u3 = ( data[6] << 7 ) | data[7];
+	var str = "";
+	str += u0 + " : " + u1;
+	str += "  -  ";
+	str += (4096-u0) + " : " + (4096-u1);
+	str += "  -  ";
+	var pc = ( ( u1 - u0 ) * 100.0 / (4096-u0) ).toFixed(1) + "%";
+	str += pc;
+	document.getElementById( "eqtable_dsp0" ).innerHTML = "DSP: " + pc;
+	if ( u2 != 0 )
+	{
+		str += "\n";
+		str += u2 + " : " + u3;
+		str += "  -  ";
+		str += (4096-u2) + " : " + (4096-u3);
+		str += "  -  ";
+		pc = ( ( u3 - u2 ) * 100.0 / (4096-u2) ).toFixed(1) + "%";
+		str += pc;
+		document.getElementById( "eqtable_dsp1" ).innerHTML = "DSP: " + pc;
+	}
+	document.getElementById( "rxSysex" ).value += ( "\n-----\n" + str );
+}
+function parseSampleRate( data ) {
+	sampleRate = ( ( data[0] << 14 ) |  ( data[1] << 7 ) | data[2] ) * 4;
+	document.getElementById( "rxSysex" ).value += ( "\n-----\n" + sampleRate + "Hz" );
+	document.getElementById( "samplerate" ).innerHTML = sampleRate + "Hz";
+}
+function parseConfigDump( wdata ) {
+	var dsp, ch, mix;
+	// pack words back together
+	let count = ( wdata.length - 8 - 1 )/3;
+	let data = [];
+	let index = 8;
+	for ( let i=0; i<count; ++i ) {
+		let w2 = wdata[ index++ ];
+		let w1 = wdata[ index++ ];
+		let w0 = wdata[ index++ ];
+		data.push( ( w2 << 14 ) | ( w1 << 7 ) | w0 );
+	}
+	// version
+	var version = data[0];
+	if ( version != 3 )
+	{
+		alert( "This version of the tool does not match the ES-9 firmware." );
+		return;
+	}
+	// HPF
+	var hpf = data[1];
+    for ( ch=0; ch<7; ++ch ) {
+		var id = "dc_" + (1+ch);
+		document.getElementById( id ).checked = ( hpf & (1<<ch) );
+	}
+	// route in
+	for ( dsp=0; dsp<4; ++dsp ) {
+		for ( ch=0; ch<8; ++ch ) {
+			var id = "cs" + dsp + "_" + ch;
+			var t = document.getElementById( id );
+			if ( t != null ) {
+				var v = data[2+dsp*8+ch];
+				if ( ( v >> 4 ) == 7 ) {
+					v = 0x70 + inputCaptureLookup.indexOf( v );
+				}
+				t.value = v;
+			}
+		}
+	}
+	// route out
+	for ( dsp=0; dsp<4; ++dsp ) {
+		for ( ch=0; ch<8; ++ch ) {
+			var id = "os" + dsp + "_" + ch;
+			var t = document.getElementById( id );
+			if ( t != null ) {
+				t.value = data[2+32+dsp*8+ch];
+			}
+		}
+	}
+	// mix
+    var c = 2 + 32 + 32;
+	var ch, mix;
+	for ( mix=0; mix<16; ++mix ) {
+		for ( ch=0; ch<8; ++ch ) {
+			let v = data[c]; c++;
+			let id = "mix" + mix + "_" + ch;
+			document.getElementById( id ).value = v;
+			updateMixText( mix, ch, v );
+		}
+	}
+	var i;
+    for ( i=0; i<16; ++i ) {
+		updateMixTag( i );
+    }
+    for ( i=0; i<8; ++i ) {
+		updateMixChTag( 2, i );
+		updateMixChTag( 3, i );
+	}
+	// vmix
+	c += 2 * 128;
+	// options
+	var options = data[c]; c++;
+	updateOptions( options );
+	// links
+	var links0 = data[c]; c++;
+	var links1 = data[c]; c++;
+    var links = ( links1 << 16 ) | links0;
+    for ( i=0; i<7; ++i ) {
+    	document.getElementById( "link7_" + (2*i) ).checked = ( links >> i ) & 1;
+    }
+    for ( i=0; i<8; ++i ) {
+    	document.getElementById( "link6_" + (2*i) ).checked = ( links >> (8+i) ) & 1;
+    }
+    for ( i=0; i<4; ++i ) {
+    	document.getElementById( "link0_" + (2*i) ).checked = ( links >> (16+i) ) & 1;
+    	document.getElementById( "link1_" + (2*i) ).checked = ( links >> (20+i) ) & 1;
+    	document.getElementById( "link2_" + (2*i) ).checked = ( links >> (24+i) ) & 1;
+    	document.getElementById( "link3_" + (2*i) ).checked = ( links >> (28+i) ) & 1;
+    }
+    // midi channels
+    let channels = data[c]; c++;
+    document.getElementById( 'midi_ch_usb' ).value = ( channels >> 8 ) & 0xff;
+    document.getElementById( 'midi_ch_din' ).value = channels & 0xff;
+    // dc offsets
+    for ( i=0; i<8; ++i ) {
+		var v = data[c]; c++;
+		v = ( v << 16 ) >> 16;
+		document.getElementById( "outDC_" + i ).value = v;
+		updateOutDCText( i, v );
+    }
+    // filters
+    var m, ch;
+    for ( m=0; m<2; ++m ) {
+    	for ( ch=0; ch<8; ++ch ) {
+    		for ( f=0; f<4; ++f ) {
+    			var type = data[c]; c++;
+    			var freq = data[c]; c++;
+    			var q    = data[c]; c++;
+    			var gain = data[c]; c++;
+    			gain = ( gain << 16 ) >> 16;
+				var id = "eq" + m + "_" + ch + "_" + f;
+    			document.getElementById( id + "_f" ).value = freq;
+    			document.getElementById( id + "_q" ).value = q;
+    			document.getElementById( id + "_g" ).value = gain;
+    			document.getElementById( id + "_enable" ).checked = ( type & 1 );
+    			document.getElementById( id + "_type" ).value = ( type >> 1 );
+    			updateEQText( m, ch, f );
+    		}
+    	}
+    }
+    // smoothing
+	var smoothing = data[c]; c++;
+	for ( i=0; i<16; ++i ) {
+		document.getElementById( "smooth_" + i ).checked = ( smoothing >> i ) & 1;
+	}
+	
+	rebuildMixer();
+}
+</script>
+
+</head>
+
+<body>
+
+<div class="small">
+At the time of writing this will work only in Google's <a href="http://www.google.com/chrome/">Chrome</a> browser. Chrome may block SysEx access if you run this from a website, in which case download the html file locally and run it from there.
+</div>
+<div class="small" id="status"></div>
+<div class="small">
+This version is for ES-9 firmware v1.3.0 and above.
+</div>
+<p>
+
+<button class="big" onclick="saveToFlash(1)">Save to Flash (Hosted slot)</button>
+<button class="big" onclick="saveToFlash(0)">Save to Flash (Standalone slot)</button>
+<button onclick="restoreFromFlash(1)">Load from Flash (Hosted slot)</button>
+<button onclick="restoreFromFlash(0)">Load from Flash (Standalone slot)</button>
+<button onclick="defaults(1)">Reset to defaults suitable for hosted</button>
+<button onclick="defaults(0)">Reset to defaults suitable for standalone</button>
+<p>
+Send to MIDI port: <select id="midioutput" onchange='changeOutput()'></select>
+Listen on MIDI port: <select id="midiinput" onchange='changeInput()'></select>
+<button onclick="reqVersion()">Request ES-9 Version</button>
+</p>
+<div id='upload' class='upload'>
+<label for="chooseConfig">Choose Config to Upload:</label><input type="file" id="chooseConfig" name="files[]" single />
+<button onclick="uploadConfig()">Upload</button>
+</div>
+<div id='download' class='upload'>
+<button onclick="reqConfig()">Download Config</button>
+<a id="saveConfig" download="config.syx">Click to Save Config</a>
+</div>
+<p>
+<textarea rows=5 cols=50 id="log" class="log" readOnly></textarea>
+<textarea rows=5 cols=45 name="text" id="txSysex"></textarea>
+<textarea rows=5 cols=45 name="text" id="rxSysex"></textarea>
+<p>
+
+<table id="dc_table" class="routebox">
+<tr>
+<th colspan=7>Input DC Blocking</th>
+</tr>
+<tr>
+<td>Inputs 1/2<input type='checkbox' id='dc_1' onChange='updateDC()'></td>
+<td>Inputs 3/8<input type='checkbox' id='dc_2' onChange='updateDC()'></td>
+<td>Inputs 4/5<input type='checkbox' id='dc_3' onChange='updateDC()'></td>
+<td>Inputs 6/7<input type='checkbox' id='dc_4' onChange='updateDC()'></td>
+<td>Inputs 9/10<input type='checkbox' id='dc_5' onChange='updateDC()'></td>
+<td>Inputs 11/12<input type='checkbox' id='dc_6' onChange='updateDC()'></td>
+<td>Inputs 13/14<input type='checkbox' id='dc_7' onChange='updateDC()'></td>
+</tr>
+</table>
+
+<table id="options_table" class="routebox">
+<tr>
+<th colspan=7>Options</th>
+</tr>
+<tr>
+<td>
+<input type='radio' name='options_1' id='options_1_spdif' value='spdif' onChange='changeOptions()' checked><label for="options_1_spdif">S/PDIF</label>
+<input type='radio' name='options_1' id='options_1_mixer' value='mixer' onChange='changeOptions()'><label for="options_1_mixer">Mixer 2</label>
+</td>
+</tr>
+</table>
+
+<table id="options2_table" class="routebox">
+<tr>
+<th colspan=7>Options</th>
+</tr>
+<tr>
+<td>
+<label for="midi_thru">MIDI Thru: </label><input type='checkbox' id='midi_thru' onChange='changeOptions()'>
+</td>
+</tr>
+</table>
+
+<table id="channels_table" class="routebox">
+<tr>
+<th colspan=7>Mixer MIDI channels</th>
+</tr>
+<tr>
+<td>
+<label for="midi_ch_usb">USB: </label><select id="midi_ch_usb" onchange='changeMIDIChannels()'><option value='0'>Off</option>
+<script>
+var i;
+for ( i=1; i<=16; ++i ) {
+	document.write( '<option value=' + i + '>' + i + '</option>' );
+}
+</script>
+</select>
+<label for="midi_ch_din">DIN: </label><select id="midi_ch_din" onchange='changeMIDIChannels()'><option value='0'>Off</option>
+<script>
+var i;
+for ( i=1; i<=16; ++i ) {
+	document.write( '<option value=' + i + '>' + i + '</option>' );
+}
+</script>
+</select>
+</td>
+</tr>
+</table>
+
+<table id="samplerate_table" class="routebox">
+<tr>
+<th colspan=7>Sample rate</th>
+</tr>
+<tr><td id='samplerate'>Unknown</td></tr>
+</table>
+
+<br>
+
+<!--
+<table id="dc_table" class="routebox">
+<tr>
+<th colspan=7>Codec</th>
+</tr>
+<tr>
+<td>Reset 1<input type='checkbox' id='cr_1' onChange='updateCR(1)'></td>
+<td>Reset 2<input type='checkbox' id='cr_2' onChange='updateCR(2)'></td>
+<td><button id='crs_1' onclick='resyncCodec(1)'>Resync 1</button></td>
+<td><button id='crs_2' onclick='resyncCodec(2)'>Resync 2</button></td>
+</tr>
+</table>
+-->
+
+<script>
+var inputCaptureLookup = [ 0x78, 0x79, 0x76, 0x75, 0x74, 0x7b, 0x7a, 0x77, 0x73, 0x72, 0x7d, 0x7c, 0x7e, 0x7f ]
+function writeCaptureSelect( dsp, ch ) {
+	var id = "cs" + dsp + "_" + ch;
+	var str = "<td class=ic><select id=" + id + " onChange='updateCapture(" + dsp + ", " + ch + ")'>";
+	var i;
+	for ( i=0; i<14; ++i ) {
+		str += "<option value=" + (0x70+i) + ">Input&nbsp;" + (i+1) + "</option>";
+	}
+	for ( i=0; i<16; ++i ) {
+		str += "<option value=" + (0x60+i) + ">Bus&nbsp;" + (i+1) + "</option>";
+	}
+	for ( i=0; i<8; ++i ) {
+		str += "<option value=" + (0x00+i) + ">USB&nbsp;" + (i+1) + "</option>";
+	}
+	for ( i=0; i<8; ++i ) {
+		str += "<option value=" + (0x10+i) + ">USB&nbsp;" + (i+9) + "</option>";
+	}
+	for ( i=0; i<8; ++i ) {
+		str += "<option value=" + (0x20+i) + ">MIX&nbsp;" + (i+1) + "</option>";
+	}
+	str += "<option value=48>S/PDIF L</option><option value=49>S/PDIF R</option>";
+	str += "</select></td>";
+	document.write( str );
+}
+function writeOutputSelect( dsp, ch ) {
+	var id = "os" + dsp + "_" + ch;
+	var str = "<td class=ic><select id=" + id + " onChange='updateOutputs(" + dsp + ")'>";
+	str += "<option value=6>Main Out L</option><option value=7>Main Out R</option>";
+	str += "<option value=12>Phones L</option><option value=13>Phones R</option>";
+	str += "<option value=14>ES-5 L</option><option value=15>ES-5 R</option>";
+	str += "<option value=8>Output 1</option><option value=9>Output 2</option>";
+	str += "<option value=4>Output 3</option><option value=5>Output 4</option>";
+	str += "<option value=2>Output 5</option><option value=3>Output 6</option>";
+	str += "<option value=11>Output 7</option><option value=10>Output 8</option>";
+	var i;
+	for ( i=0; i<16; ++i ) {
+		str += "<option value=" + (0x10+i) + ">Bus " + (i+1) + "</option>";
+	}
+	str += "</select></td>";
+	document.write( str );
+}
+</script>
+
+<table id="dsp01_table" class="routebox">
+<tr>
+<script>
+	var i;
+	for ( i=0; i<8; ++i ) {
+		writeCaptureSelect( 0, i );
+	}
+	for ( i=0; i<8; ++i ) {
+		writeCaptureSelect( 1, i );
+	}
+</script>
+</tr>
+<tr>
+<script>
+	var i;
+	for ( i=1; i<=16; ++i ) {
+		document.write( "<th>" + i + "</th>");
+	}
+</script>
+</tr>
+<tr><th colspan=16>&#x21E9;<br>USB audio<br>&#x21E9;</th></tr>
+<tr>
+<script>
+	var i;
+	for ( i=1; i<=16; ++i ) {
+		document.write( "<th>" + i + "</th>");
+	}
+</script>
+</tr>
+<tr>
+<script>
+	var i;
+	for ( i=0; i<8; ++i ) {
+		writeOutputSelect( 0, i );
+	}
+	for ( i=0; i<8; ++i ) {
+		writeOutputSelect( 1, i );
+	}
+</script>
+</tr>
+</table>
+
+<br>
+
+<table id="dsp2_table" class="routebox">
+<tr>
+<script>
+	var i;
+	for ( i=0; i<8; ++i ) {
+		writeCaptureSelect( 2, i );
+	}
+</script>
+</tr>
+<tr>
+<script>
+	var i;
+	for ( i=1; i<=8; ++i ) {
+		document.write( "<th>" + i + "</th>");
+	}
+</script>
+</tr>
+<tr><th colspan=8>&#x21E9;<br>Mixer<br>&#x21E9;</th></tr>
+<tr>
+<script>
+	var i;
+	for ( i=1; i<=8; ++i ) {
+		document.write( "<th>" + i + "</th>");
+	}
+</script>
+</tr>
+<tr>
+<script>
+	var i;
+	for ( i=0; i<8; ++i ) {
+		writeOutputSelect( 2, i );
+	}
+</script>
+</tr>
+</table>
+
+<table id="dsp3_table" class="routebox">
+<tr>
+<script>
+	var i;
+	for ( i=0; i<8; ++i ) {
+		writeCaptureSelect( 3, i );
+	}
+</script>
+</tr>
+<tr>
+<script>
+	var i;
+	for ( i=1; i<=8; ++i ) {
+		document.write( "<th id='cl3_" + (i-1) + "'>" + i + "</th>");
+	}
+</script>
+</tr>
+<tr><th colspan=8 id="dsp3_table_label">&#x21E9;<br>Mixer 2<br>&#x21E9;</th></tr>
+<tr>
+<script>
+	var i;
+	for ( i=1; i<=8; ++i ) {
+		document.write( "<th id='ol3_" + (i-1) + "'>" + i + "</th>");
+	}
+</script>
+</tr>
+<tr>
+<script>
+	var i;
+	for ( i=0; i<8; ++i ) {
+		writeOutputSelect( 3, i );
+	}
+</script>
+</tr>
+</table>
+
+<br>
+
+<table id="link_table" class="routebox">
+<tr>
+<th colspan=8>Stereo Links</th>
+</tr>
+<tr>
+<script>
+	var i;
+	for ( i=0; i<13; i+=2 ) {
+		document.write( "<td class='linkcb'>Inputs " + (i+1) + "/" + (i+2) + "<input type='checkbox' id='link7_" + i + "' onChange='updateLink(" + (i/2) + ", this)'></td>");
+	}
+</script>
+</tr>
+<tr>
+<script>
+	var i;
+	for ( i=0; i<15; i+=2 ) {
+		document.write( "<td class='linkcb'>Bus " + (i+1) + "/" + (i+2) + "<input type='checkbox' id='link6_" + i + "' onChange='updateLink(" + (8+(i/2)) + ", this)'></td>");
+	}
+</script>
+</tr>
+<tr>
+<script>
+	var i;
+	for ( i=0; i<7; i+=2 ) {
+		document.write( "<td class='linkcb'>USB " + (i+1) + "/" + (i+2) + "<input type='checkbox' id='link0_" + i + "' onChange='updateLink(" + (16+(i/2)) + ", this)'></td>");
+	}
+	for ( i=0; i<7; i+=2 ) {
+		document.write( "<td class='linkcb'>USB " + (i+9) + "/" + (i+10) + "<input type='checkbox' id='link1_" + i + "' onChange='updateLink(" + (20+(i/2)) + ", this)'></td>");
+	}
+</script>
+</tr>
+<tr>
+<script>
+	var i;
+	for ( i=0; i<7; i+=2 ) {
+		document.write( "<td class='linkcb'>Mix " + (i+1) + "/" + (i+2) + "<input type='checkbox' id='link2_" + i + "' onChange='updateLink(" + (24+(i/2)) + ", this)'></td>");
+	}
+	for ( i=0; i<7; i+=2 ) {
+		document.write( "<td class='linkcb'>Mix " + (i+9) + "/" + (i+10) + "<input type='checkbox' id='link3_" + i + "' onChange='updateLink(" + (28+(i/2)) + ", this)'></td>");
+	}
+</script>
+</tr>
+</table>
+
+<table id="link_table" class="routebox">
+<tr>
+<th colspan=8>Mix Smoothing</th>
+</tr>
+<tr>
+<script>
+	var i;
+	for ( i=0; i<16; i+=1 ) {
+		document.write( "<td class='linkcb'>Mix " + (i+1) + "<input type='checkbox' id='smooth_" + i + "' onChange='updateSmoothing(" + i + ", this)'></td>");
+		if ( i == 7 ) {
+			document.write( "</tr><tr>" );
+		}
+	}
+</script>
+</tr>
+</table>
+
+<br>
+<span class='mixtitle'>Macro mix</span> - controls the raw mix below, respecting stereo links
+
+<div id='vmixer'></div>
+<script>
+function buildStereoMixer( m ) {
+	var str = '<table id=vmix' + m + ' class="mixtable">' ;
+	var i;
+	var row1 = "<tr>";
+	var row2 = "<tr>";
+	var row3 = "<tr>";
+	for ( i=0; i<8; ++i ) {
+		var id = "vmixcht" + m + "_" + i;
+		row1 += "<td><div id=" + id + " class='mixchtag'></div></td>";
+		row1 += "<td></td>";
+
+		var id = "vmix" + m + "_" + i;
+		row2 += "<td class='mix'><input type='range' min='0' max='127' value='0' step='1' class='mix' onInput='vmixSlider( " + m + ", " + i + ", 1 )' ondblclick='vmixDoubleClick( " + m + ", " + i + ", 1 )' id=" + id + "></td>";
+		var id = "vpan" + m + "_" + i;
+		row2 += "<td class='pan'><input type='range' min='-63' max='63' value='0' step='1' class='pan' onInput='vpanSlider( " + m + ", " + i + ", 1 )' ondblclick='doubleClick(\"" + id + "\", 0);vpanSlider( " + m + ", " + i + ", 1 )' id=" + id + "></td>";
+
+		var id = "vmixt" + m + "_" + i;
+		row3 += "<td id=" + id + " class='mixt' ondblclick='vmixTextDblClick( " + m + ", " + i + ", 1 )'>0</td>";
+		var id = "vpant" + m + "_" + i;
+		row3 += "<td id=" + id + " class='mixt'>0</td>";
+
+		if ( (i&1) == 0 ) {
+			var v = document.getElementById( "cs" + (2+(m>>3)) + "_" + i ).value;
+			if ( document.getElementById( "link" + (v>>4) + "_" + (v&0xe) ).checked ) {
+				i += 1;
+			}
+		}
+	}
+	str += row1 + "</tr>" + row2 + "</tr>" + row3 + "</tr>";
+	str += "<tr><td colspan=16 class=mixtag id=vmixtag" + m + "></td></tr>";
+	str += '</table>';
+	return str;
+}
+function buildMonoMixer( m ) {
+	var str = '<table id=vmix' + m + ' class="mixtable">' ;
+	var i;
+	var row1 = "<tr>";
+	var row2 = "<tr>";
+	var row3 = "<tr>";
+	for ( i=0; i<8; ++i ) {
+		var id = "vmixcht" + m + "_" + i;
+		row1 += "<td><div id=" + id + " class='mixchtag'></div></td>";
+
+		var id = "vmix" + m + "_" + i;
+		row2 += "<td class='mix'><input type='range' min='0' max='127' value='0' step='1' class='mix' onInput='vmixSlider( " + m + ", " + i + ", 0 )' ondblclick='vmixDoubleClick( " + m + ", " + i + ", 0 )' id=" + id + "></td>";
+
+		var id = "vmixt" + m + "_" + i;
+		row3 += "<td id=" + id + " class='mixt' ondblclick='vmixTextDblClick( " + m + ", " + i + ", 0 )'>0</td>";
+
+		if ( (i&1) == 0 ) {
+			var v = document.getElementById( "cs" + (2+(m>>3)) + "_" + i ).value;
+			if ( document.getElementById( "link" + (v>>4) + "_" + (v&0xe) ).checked ) {
+				i += 1;
+			}
+		}
+	}
+	str += row1 + "</tr>" + row2 + "</tr>" + row3 + "</tr>";
+	str += "<tr><td colspan=8 class=mixtag id=vmixtag" + m + "></td></tr>";
+	str += '</table>';
+	return str;
+}
+function rebuildMixer()
+{
+	var str = "";
+	var i;
+	for ( i=0; i<7; i+=2 ) {
+		if ( document.getElementById( "link2_" + i ).checked ) {
+			str += buildStereoMixer( i );
+		} else {
+			str += buildMonoMixer( i );
+			str += buildMonoMixer( i+1 );
+		}
+	}
+	if ( document.getElementById( "options_1_mixer" ).checked ) {
+		str += "<br>";
+		for ( i=0; i<7; i+=2 ) {
+			if ( document.getElementById( "link3_" + i ).checked ) {
+				str += buildStereoMixer( 8+i );
+			} else {
+				str += buildMonoMixer( 8+i );
+				str += buildMonoMixer( 8+i+1 );
+			}
+		}
+	}
+	document.getElementById( "vmixer" ).innerHTML = str;
+	for ( i=0; i<16; ++i ) {
+		updateMixTag( i );
+		var ch;
+	    for ( ch=0; ch<8; ++ch ) {
+			updateVMixText( i, ch );
+			updateVPanText( i, ch );
+		}
+	}
+    for ( i=0; i<8; ++i ) {
+		updateMixChTag( 2, i );
+		updateMixChTag( 3, i );
+	}
+
+	if ( midi ) {
+		var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+		var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x2A, 0xF7 ];
+		output.send( arr );
+		var dd = log( "sent mix request to ES-9" );
+		dumpSysex( arr, "txSysex", dd+"\n" );
+		makeDownloadInvalid();
+	}
+}
+</script>
+
+<p>
+<hr>
+<span class='mixtitle'>Raw mix</span> - the actual mix matrix running on the hardware
+<br>
+
+<script>
+var m;
+for ( m=0; m<16; ++m ) {
+	var id = "mix" + m;
+	document.write( '<table id=' + id + ' class="mixtable">' );
+	var i;
+	var str = "<tr>";
+	for ( i=0; i<8; ++i ) {
+		var id = "mixcht" + m + "_" + i;
+		str += "<td><div id=" + id + " class='rawmixchtag'></div></td>";
+	}
+	str += "</tr><tr>";
+	for ( i=0; i<8; ++i ) {
+		var id = "mix" + m + "_" + i;
+		str += "<td class='rawmix'><input type='range' min='0' max='32767' value='0' step='1' class='rawmix' onInput='mixSlider( " + m + ", " + i + ")' id=" + id + "></td>";
+	}
+	str += "</tr>";
+	document.write( str );
+	var str = "<tr>";
+	for ( i=0; i<8; ++i ) {
+		var id = "mixt" + m + "_" + i;
+		str += "<td><div id=" + id + " class='rawmixt'>0</div></td>";
+	}
+	str += "</tr><tr><td colspan=8 class=mixtag id=mixtag" + m + "></td></tr>";
+	document.write( str );
+	document.write( '</table>' );
+	if ( m == 7 ) {
+		document.write( '<br>' );
+	}
+}
+</script>
+
+<hr>
+<span class='mixtitle'>Input EQ</span>
+<br>
+
+<script>
+var kNumFilters = 4;
+function eqFreqToFloat( v ) {
+	var min = 10.0;
+	var mult = Math.log( 22000.0/min )/32767.0;
+	return min * Math.exp( mult * v );
+}
+function eqQToFloat( v ) {
+	var min = 0.1;
+	var mult = Math.log( 18.0/min )/32767.0;
+	return min * Math.exp( mult * v );
+}
+function to48bit( v ) {
+	var n = Math.round( v * 0x200000000000 );
+	if ( n < -0x800000000000 ) {
+		n = -0x800000000000;
+	}
+	if ( n < 0 ) {
+		n = 0x1000000000000 + n;
+	}
+	var s = n.toString(16);
+	if ( s.length < 12 ) {
+		s = "0".repeat( 12 - s.length ) + s;
+	}
+	return s;
+}
+function updateEQText( m, ch, f ) {
+	var id = "eq" + m + "_" + ch + "_" + f;
+	var enabled = document.getElementById( id + "_enable" ).checked;
+
+	var type = document.getElementById( id + "_type" ).value;
+	var hasF = ( type != 7 );
+	var hasG = ( type >= 4 && type <= 5 ) || ( type == 6 );
+	var hasQ = ( type >= 2 && type <= 3 ) || ( type == 6 );
+	if ( hasF ) {
+		document.getElementById( id + "_f" ).removeAttribute( 'disabled' );
+	} else {
+		document.getElementById( id + "_f" ).setAttribute( 'disabled', 'disabled' );
+	}
+	if ( hasG ) {
+		document.getElementById( id + "_g" ).removeAttribute( 'disabled' );
+	} else {
+		document.getElementById( id + "_g" ).setAttribute( 'disabled', 'disabled' );
+	}
+	if ( hasQ) {
+		document.getElementById( id + "_q" ).removeAttribute( 'disabled' );
+	} else {
+		document.getElementById( id + "_q" ).setAttribute( 'disabled', 'disabled' );
+	}
+
+	var wFreq = document.getElementById( id + "_f" ).value;
+	var freq = eqFreqToFloat( wFreq );
+	document.getElementById( id + "_ft" ).innerHTML = freq.toFixed(1) + "Hz";
+	var wQ = document.getElementById( id + "_q" ).value;
+	var Q = eqQToFloat( wQ );
+	document.getElementById( id + "_qt" ).innerHTML = Q.toFixed(3);
+	var wGain = document.getElementById( id + "_g" ).value;
+	if ( type == '5' ) {
+		if ( wGain > 32767.0*12/15 ) {
+			wGain = 32767.0*12/15;
+		}
+	}
+	var G = wGain * 15.0 / 32767.0;
+	document.getElementById( id + "_gt" ).innerHTML = G.toFixed(1) + "dB";
+}
+function changeEQEnable(m, ch, f) {
+	changeEQ( m, ch, f );
+	setTimeout( reqUsage, 100 );
+}
+function changeEQ(m, ch, f) {
+	updateEQText( m, ch, f );
+	
+	var id = "eq" + m + "_" + ch + "_" + f;
+	var enabled = document.getElementById( id + "_enable" ).checked;
+
+	var type = document.getElementById( id + "_type" ).value;
+
+	var wFreq = document.getElementById( id + "_f" ).value;
+	var wQ = document.getElementById( id + "_q" ).value;
+	var wGain = document.getElementById( id + "_g" ).value;
+	if ( type == '5' ) {
+		if ( wGain > 32767.0*12/15 ) {
+			wGain = 32767.0*12/15;
+		}
+	}
+
+	// update ES-9
+	var wType = ( type << 1 ) | enabled;
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x39, 8*m+ch, f, wType ];
+	arr.push( ( wFreq >> 14 ) & 0x03 );
+	arr.push( ( wFreq >>  7 ) & 0x7f );
+	arr.push( ( wFreq >>  0 ) & 0x7f );
+	arr.push( ( wQ >> 14 ) & 0x03 );
+	arr.push( ( wQ >>  7 ) & 0x7f );
+	arr.push( ( wQ >>  0 ) & 0x7f );
+	arr.push( ( wGain >> 14 ) & 0x03 );
+	arr.push( ( wGain >>  7 ) & 0x7f );
+	arr.push( ( wGain >>  0 ) & 0x7f );
+	arr.push( 0xF7 );
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	output.send( arr );
+	var dd = log( "sent EQ update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+	makeDownloadInvalid();
+}
+var m, ch, f;
+for ( m=0; m<2; ++m ) {
+	document.write( '<table id=eqtable' + m + ' class="eqtable">' );
+	str = "<tr><th id=eqtable_dsp" + m + "></th><th colspan=" + kNumFilters + ">Mixer " + (m+1) + "</th></tr>";
+	for ( ch=0; ch<8; ++ch ) {
+		str += "<tr>";
+		str += "<td id=eqtag" + m + "_" + ch + " class='eqtag'></td>";
+		for ( f=0; f<kNumFilters; ++f ) {
+			var id = "eq" + m + "_" + ch + "_" + f;
+			str += "<td class='eq'><div class='innereq'>";
+			str += "<table>"
+			str += "<tr><td rowspan=3><label for='" + id + "_enable' class='eqenable'>Enable:</label><input type='checkbox' name='" + id + "_enable' id='" + id + "_enable' onChange='changeEQEnable(" + m + "," + ch + "," + f + ")'>";
+			str += "<br>"
+			str += "<label for='" + id + "_type' class='eqenable'>Type: </label><br><select name='" + id + "_type' id='" + id + "_type' onchange='changeEQ(" + m + "," + ch + "," + f + ")'>";
+			str += "<option value='0'>Low pass (1st)</option><option value='1'>High pass (1st)</option>";
+			str += "<option value='2'>Low pass (2nd)</option><option value='3'>High pass (2nd)</option>";
+			str += "<option value='4'>Low shelf</option><option value='5'>High shelf</option>";
+			str += "<option value='6'>Peak</option>";
+			str += "<option value='7'>Invert phase</option>";
+			str += "</select></td>";
+			str += "<td><label for='" + id + "_f' class='eqenable'>Freq: </label></td><td><input type='range' min='0' max='32767' value='0' step='1' name='" + id + "_f' id='" + id + "_f' onInput='changeEQ(" + m + "," + ch + "," + f + ")'></td>";
+			str += "<td><div class='eqFt' id='" + id + "_ft'></div></td></tr>";
+			str += "<tr><td><label for='" + id + "_q' class='eqenable'>Q: </label></td><td><input type='range' min='0' max='32767' value='12341' step='1' name='" + id + "_q' id='" + id + "_q' onInput='changeEQ(" + m + "," + ch + "," + f + ")' ondblclick='doubleClick(\"" + id + "_q\", 12341);changeEQ(" + m + "," + ch + "," + f + ")'></td>";
+			str += "<td><div class='eqQt' id='" + id + "_qt'></div></td></tr>";
+			str += "<tr><td><label for='" + id + "_g' class='eqenable'>Gain: </label></td><td><input type='range' min='-32767' max='32767' value='0' step='1' name='" + id + "_g' id='" + id + "_g' onInput='changeEQ(" + m + "," + ch + "," + f + ")' ondblclick='doubleClick(\"" + id + "_g\", 0);changeEQ(" + m + "," + ch + "," + f + ")'></td>";
+			str += "<td><div class='eqGt' id='" + id + "_gt'></div></td></tr>";
+			str += "</table>"
+			str += "</div></td>";
+		}
+		str += "</tr>";
+	}
+	document.write( str );
+	document.write( '</table>' );
+	if ( m == 0 ) {
+		document.write( '<br>' );
+	}
+}
+</script>
+
+<hr>
+<span class='mixtitle'>Output DC offsets</span> - can only be applied if a mixer is routed to the output
+<br>
+
+<script>
+function doubleClick(id, v) {
+	document.getElementById( id ).value = v;
+}
+var ch;
+document.write( '<table id=outDC class="mixtable">' );
+for ( ch=0; ch<8; ++ch ) {
+	var id = "outDC_" + ch;
+	document.write( "<tr><td class='outDCtag'>Output " + (ch+1) + "</td><td id=" + id + "t class='outDCt'>0</td>" );
+	document.write( "<td class='mix'><input type='range' min='-3176' max='3176' value='0' step='1' class='dc' onInput='outDCSlider(" + ch + ")' ondblclick='doubleClick(\"" + id + "\", 0);outDCSlider(" + ch + ")' id=" + id + "></td></tr>" );
+}
+document.write( '</table>' );
+</script>
+
+<script>
+var midi, data;
+const es9MIDIInKey = "es9MIDIInKey";
+const es9MIDIOutKey = "es9MIDIOutKey";
+const es9SysExKey = "es9SysExKey";
+
+var es9InPortName = "ES-9 MIDI In";
+var es9OutPortName = "ES-9 MIDI Out";
+
+var sampleRate = 48000.0;
+
+if(!localStorage.getItem(es9MIDIInKey)) {  // No input stored
+    localStorage.setItem(es9MIDIInKey, "ES-9 MIDI In");
+} 
+else {
+    es9InPortName = localStorage.getItem(es9MIDIInKey);
+}
+
+if(!localStorage.getItem(es9MIDIOutKey)) {  // No output stored
+    localStorage.setItem(es9MIDIOutKey, "ES-9 MIDI Out");
+} 
+else {
+    es9OutPortName = localStorage.getItem(es9MIDIOutKey);
+}
+
+function onMIDISuccess(midiAccess) {
+	log( "midi access granted" );
+    status("OK");
+    midi = midiAccess;
+    midi.onstatechange = onStateChange;
+    onStateChange(null);
+}
+function reqAtTimeout() {
+	reqSampleRate();
+	reqUsage();
+	reqConfig();
+	reqTimeout = null;
+}
+var reqTimeout = null;
+function onStateChange(e) {
+    var str = "";
+    var es9 = -1;
+    var inputs = midi.inputs.values();
+    for ( var input = inputs.next(); input && !input.done; input = inputs.next() ) {
+	    str += "<option value='" + input.value.id + "'>" + input.value.name + "</option>";
+	    if ( input.value.name == es9InPortName ) {
+		    es9 = input.value.id;
+	    }
+    }
+    document.getElementById( "midiinput" ).innerHTML = str
+    if ( es9 != -1 ) {
+	    document.getElementById( "midiinput" ).value = es9;
+    }
+    str = "";
+    es9 = -1;
+    var outputs = midi.outputs.values();
+    for ( var output = outputs.next(); output && !output.done; output = outputs.next() ) {
+	    str += "<option value='" + output.value.id + "'>" + output.value.name + "</option>";
+	    if ( output.value.name == es9OutPortName ) {
+		    es9 = output.value.id;
+			midi.outputs.get( output.value.id ).send( [ 0xFE ] );
+	    }
+    }
+    document.getElementById( "midioutput" ).innerHTML = str
+    if ( es9 != -1 ) {
+	    document.getElementById( "midioutput" ).value = es9;
+    }
+
+	setup_onmidimessage();
+	
+	if ( es9 != -1 ) {
+		if ( reqTimeout != null ) {
+			clearTimeout( reqTimeout );
+		}
+		reqTimeout = setTimeout( reqAtTimeout, 100 );
+	}
+}
+function onMIDIFailure(e) {
+	log( "midi access failure" );
+    status("No access to MIDI devices or your browser doesn't support WebMIDI API.");
+}
+function setup_onmidimessage() {
+    var inputs = midi.inputs.values();
+    if ( inputs.size == 0 ) {
+    	return;
+    }
+    for ( var input = inputs.next(); input && !input.done; input = inputs.next() ) {
+    	input.value.onmidimessage = "";
+    }
+	var input = midi.inputs.get( document.getElementById( "midiinput" ).value );
+	input.onmidimessage = onMIDIMessage;
+}
+function changeInput() {
+	setup_onmidimessage();
+	let inputSelector = document.getElementById("midiinput"); 
+	let selectedPortName = inputSelector.options[inputSelector.selectedIndex].text;
+    localStorage.setItem(es9MIDIInKey, selectedPortName);
+    es9InPortName = selectedPortName;
+}
+function changeOutput() {
+	let outputSelector = document.getElementById("midioutput"); 
+	let selectedPortName = outputSelector.options[outputSelector.selectedIndex].text;
+    localStorage.setItem(es9MIDIOutKey, selectedPortName);
+    es9OutPortName = selectedPortName;
+}
+var configBlob = null;
+function onMIDIMessage(message) {
+    data = message.data;
+    var header = [ 240, 0, 33, 39, 0x19 ];
+    for ( var i=0; i<5; ++i ) {
+    	if ( header[i] != data[i] ) {
+    		return;
+    	}
+    }
+	var dd = log( "received sysex (" + data.length + " bytes)" );
+	dumpSysex( data, "rxSysex", dd+"\n" );
+	if ( data[5] == 0x32 ) {
+		// version string
+	    var str = String.fromCharCode.apply( null, data.slice( 6, -2 ) );
+		document.getElementById( "rxSysex" ).value += ( "\n-----\n" + str );
+	}
+	else if ( data[5] == 0x08 ) {
+		// config dump
+		parseConfigDump( data );
+		configBlob = new Blob([data], {type: "application/octet-stream"});
+		let url = window.URL.createObjectURL(configBlob);
+		document.getElementById( "saveConfig" ).href = url;
+		document.getElementById( 'saveConfig' ).style.display = "inline";
+	}
+	else if ( data[5] == 0x11 ) {
+		// mix dump
+		parseMixDump( data.slice( 6, -1 ) );
+	}
+	else if ( data[5] == 0x12 ) {
+		// usage
+		parseUsage( data.slice( 6, -1 ) );
+	}
+	else if ( data[5] == 0x14 ) {
+		// sample rate
+		parseSampleRate( data.slice( 6, -1 ) );
+	}
+	else if ( ( data[5] & 0xF0 ) == 0x60 ) {
+		// set mixer
+		var mix = data[5] & 0xF;
+		var ch = data[6];
+		var value = ( data[7] << 14 ) | ( data[8] << 7 ) | data[9];
+		var id = "mix" + mix + "_" + ch;
+		document.getElementById( id ).value = value;
+    	updateMixText( mix, ch, value );
+	}
+}
+function send() {
+	var str = makeSysEx();
+	var arr = new Uint8Array( str.length );
+	for ( var i=0; i<str.length; ++i ) {
+		arr[i] = str.charCodeAt( i );
+	}
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	output.send( arr );
+	var dd = log( "sent sysex (" + str.length + " bytes)" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+}
+function sendMsg() {
+	var str = makeMsgSysEx();
+	var arr = new Uint8Array( str.length );
+	for ( var i=0; i<str.length; ++i ) {
+		arr[i] = str.charCodeAt( i );
+	}
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	output.send( arr );
+	var dd = log( "sent sysex (" + str.length + " bytes)" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+}
+function reqVersion() {
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x22, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent version request to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+}
+function reqConfig() {
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x23, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent config request to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+}
+function reqUsage() {
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x2B, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent usage request to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+}
+function reqSampleRate() {
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x2C, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent sample rate request to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+}
+var chosenConfig = []
+function handleFileSelect(evt,id) {
+	let files = evt.target.files; // FileList object
+	let f = files[0];
+
+	var reader = new FileReader();
+
+	reader.onload = (function(theFile) {
+		return function(e) {
+			let ints = new Uint8Array( e.target.result );
+			let arr = Array.from( ints ) ;
+			chosenConfig = [];
+			if ( arr.length != (8+3*768+1)
+				|| arr[0] != 0xF0
+				|| arr[1] != 0x00
+				|| arr[2] != 0x21
+				|| arr[3] != 0x27
+				|| arr[4] != 0x19
+				|| arr[5] != 0x08
+				|| arr[arr.length-1] != 0xF7 ) {
+				alert( "Not a valid config dump file" );
+				console.log( arr );
+			} else {
+				chosenConfig = arr;
+			}
+		};
+	  })(f);
+  
+	reader.readAsArrayBuffer( f );
+}
+document.getElementById('chooseConfig').addEventListener('change', handleFileSelect, false);
+function uploadConfig() {
+	if ( chosenConfig.length >= 7 ) {
+		let chunkOutput = midi.outputs.get( document.getElementById( "midioutput" ).value );
+		let numChunks = 24;
+		let wordsPerChunk = 768/numChunks;
+		for ( let i=0; i<numChunks; ++i ) {
+			let pos = 8 + 3 * wordsPerChunk * i;
+			let chunk = chosenConfig.slice( 0, 8 ).concat( chosenConfig.slice( pos, pos + 3 * wordsPerChunk ) )
+			chunk.push ( 0xf7 );
+			chunk[5] = 0x09;
+			chunk[6] = i;
+			chunkOutput.send( chunk );
+		}
+    	let dd = log( "sent config dump to ES-9" );
+		makeDownloadInvalid();
+	}
+}
+function saveToFlash( wh ) {
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x24, wh, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent save request to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+}
+function makeDownloadInvalid() {
+	document.getElementById( 'saveConfig' ).style.display = "none";
+}
+function restoreFromFlash( wh ) {
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x25, wh, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent restore request to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+}
+function defaults( wh ) {
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x26, wh, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent reset request to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+}
+function changeOptions() {
+	var options = 0;
+	if ( document.getElementById("options_1_mixer").checked )
+		options |= (1<<0);
+	if ( document.getElementById("midi_thru").checked )
+		options |= (1<<1);
+
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x32, options, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent options update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+	updateOptions( options );
+	rebuildMixer();
+	makeDownloadInvalid();
+}
+function changeMIDIChannels() {
+	var ch_usb = document.getElementById( 'midi_ch_usb' ).value;
+	var ch_din = document.getElementById( 'midi_ch_din' ).value;
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x35, ch_usb, ch_din, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent midi channel update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+	makeDownloadInvalid();
+}
+function updateOptions( options ) {
+	var sh = !( ( options >> 0 ) & 1 );
+	var label;
+	if ( sh ) {
+		label = "&#x21E9;<br>S/PDIF ports<br>&#x21E9;";
+	} else {
+		label = "&#x21E9;<br>Mixer 2<br>&#x21E9;";
+	}
+    document.getElementById("dsp3_table_label" ).innerHTML = label;
+	sh = !sh;
+	for ( m=2; m<8; ++m ) {
+		showHide( "cs3_" + m, sh );
+		showHide( "cl3_" + m, sh );
+		showHide( "ol3_" + m, sh );
+		showHide( "os3_" + m, sh );
+	}
+	for ( m=8; m<16; ++m ) {
+		showHide( "mix" + m, sh );
+	}
+	showHide( "eqtable1", sh );
+	document.getElementById( 'options_1_mixer' ).checked = sh;
+	document.getElementById( 'options_1_spdif' ).checked = !sh;
+
+	document.getElementById( 'midi_thru' ).checked = ( options >> 1 ) & 1;
+}
+function updateDC() {
+	var b = 0;
+	for ( var i = 1; i <= 7; ++i ) {
+		var id = "dc_" + i;
+		var bb = document.getElementById( id ).checked;
+		if ( bb ) {
+			b |= ( 1 << (i-1) );
+		}
+	}
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x31, b, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent DC blocking update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+	makeDownloadInvalid();
+}
+function updateCR( wh ) {
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var v = document.getElementById( 'cr_' + wh ).checked;
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x28, wh-1, 1-v, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent codec reset to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+}
+function resyncCodec( wh ) {
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x29, wh-1, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent codec resync to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+}
+function updateLink( which, cb ) {
+	rebuildMixer();
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x33, which, cb.checked, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent link update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+	makeDownloadInvalid();
+}
+function updateSmoothing( which, cb ) {
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x3A, which, cb.checked, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent smoothing update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+	setTimeout( reqUsage, 100 );
+	makeDownloadInvalid();
+}
+function updateCapture( dsp, ch ) {
+	// check stereo links
+	var v = document.getElementById( "cs" + dsp + "_" + ch ).value;
+	if ( document.getElementById( "link" + (v>>4) + "_" + (v&0xe) ).checked ) {
+		document.getElementById( "cs" + dsp + "_" + ((ch&0xe)+0) ).value = (v&0xfe)+0;
+		document.getElementById( "cs" + dsp + "_" + ((ch&0xe)+1) ).value = (v&0xfe)+1;
+	}
+	// update ES-9
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x40+dsp ];
+	var i;
+	for ( i=0; i<8; ++i ) {
+		var v = document.getElementById( "cs" + dsp + "_" + i ).value;
+		if ( ( v >> 4 ) == 7 ) {
+			v = inputCaptureLookup[ v & 0xf ];
+		}
+		arr.push( v );
+	}
+	arr.push( 0xF7 );
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	output.send( arr );
+	var dd = log( "sent capture update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+	if ( dsp >= 2 ) {
+		rebuildMixer();
+	}
+	makeDownloadInvalid();
+}
+function updateMixTag( m ) {
+	var id;
+	if ( m < 8 ) {
+		id = "os2_" + m;
+	} else {
+		id = "os3_" + (m-8);
+	}
+	var v = document.getElementById( id );
+	var tag = "Mix " + ( m+1 ) + " : " + v.options[v.selectedIndex].text;
+	document.getElementById( "mixtag" + m ).innerHTML = tag;
+	var vv = document.getElementById( "vmixtag" + m );
+	id = "link" + id.substr(2);
+	if ( ( (m&1) == 0 ) && document.getElementById( id ).checked ) {
+		if ( m < 8 ) {
+			id = "os2_" + (m+1);
+		} else {
+			id = "os3_" + (m-8+1);
+		}
+		var v2 = document.getElementById( id );
+		tag = "Mix " + ( m+1 ) + "/" + ( m+2 ) + " : " + v.options[v.selectedIndex].text + "/" +  v2.options[v2.selectedIndex].text;
+	}
+	if ( vv ) {
+		vv.innerHTML = tag;
+	}
+}
+function updateMixChTag( dsp, ch ) {
+	var v = document.getElementById( "cs" + dsp + "_" + ch );
+	var tag = v.options[v.selectedIndex].text;
+	var vtag = tag;
+	var cs = v.value;
+	if ( document.getElementById( "link" + (cs>>4) + "_" + (cs&0xe) ).checked ) {
+		vtag += "/" + ((cs&0xe)+2);
+	}
+	var m;
+	for ( m=0; m<8; ++m ) {
+		document.getElementById( "mixcht" + (m+8*(dsp-2)) + "_" + ch ).innerHTML = tag;
+		var vv = document.getElementById( "vmixcht" + (m+8*(dsp-2)) + "_" + ch );
+		if ( vv ) {
+			vv.innerHTML = vtag;
+		}
+	}
+    document.getElementById( "eqtag" + (dsp-2) + "_" + ch ).innerHTML = tag;
+}
+function updateOutputs( dsp ) {
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x50+dsp ];
+	var i;
+	for ( i=0; i<8; ++i )
+		arr.push( document.getElementById( "os" + dsp + "_" + i ).value );
+	arr.push( 0xF7 );
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	output.send( arr );
+	var dd = log( "sent outputs update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+	if ( dsp >= 2 ) {
+		for ( i=0; i<8; ++i ) {
+			updateMixTag( i + 8*(dsp-2) );
+		}
+	}
+	makeDownloadInvalid();
+}
+function updateMixText( mix, ch, v ) {
+	var id = "mixt" + mix + "_" + ch;
+	var str = "-\u221EdB";
+	if ( v > 0 ) {
+		var vv = 6 * Math.log2( v/8192.0 );
+		if ( v == 0x7fff ) {
+			str = "+12dB";
+		}
+		else if ( vv > 0 ) {
+			str = "+" + vv.toFixed(1) + "dB";
+		}
+		else {
+			str = vv.toFixed(1) + "dB";
+		}
+	}
+	document.getElementById( id ).innerHTML = str;
+}
+function mixSlider( mix, ch ) {
+	var id = "mix" + mix + "_" + ch;
+	var v = document.getElementById( id ).value;
+	var w = v;
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x60+mix, ch, w>>14, (w>>7)&0x7f, w&0x7f, 0xf7 ];
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	output.send( arr );
+	var dd = log( "sent mix update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+
+	updateMixText( mix, ch, v );
+	makeDownloadInvalid();
+}
+function updateOutDCText( ch, v ) {
+	var id = "outDC_" + ch + "t";
+	var str = v;
+	document.getElementById( id ).innerHTML = str;
+}
+function outDCSlider( ch ) {
+	var id = "outDC_" + ch;
+	var w = document.getElementById( id ).value;
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x36, ch, (w>>14)&0x3, (w>>7)&0x7f, w&0x7f, 0xf7 ];
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	output.send( arr );
+	var dd = log( "sent dc offset update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+
+	updateOutDCText( ch, w );
+	makeDownloadInvalid();
+}
+function vmixToDb( v ) {
+	var db = -72.0;
+	if ( v > 0 ) {
+		if ( v >= 55 ) {
+			db = -24.0 + 0.5 * ( v - 55.0 );
+		} else {
+			db = -72.0 + ( v - 1 ) * ( 72 - 24 ) / ( 55.0 - 1 );
+		}
+	}
+	return db;
+}
+function dbToMix( db ) {
+	var v = Math.round( 0x2000 * Math.pow( 2, db/6 ) );
+	v = Math.min( v, 0x7fff );
+	if ( db < -72 )
+		v = 0;
+	return v;
+}
+function dbToVmix( db ) {
+	var v;
+	if ( db < -72.0 ) {
+		v = 0;
+	} else if ( db >= -24.0 ) {
+		v = Math.round( ( db + 24 ) * 2 + 55 );
+	} else {
+		v = Math.round( ( db + 72 ) * ( 55.0-1 ) / ( 72 - 24 ) + 1 );
+	}
+	return v;
+}
+function mixToDb( v ) {
+	var db;
+	if ( v >= 0x7fff ) {
+		db = 12.0;
+	} else if ( v == 0 ) {
+		db = -80.0;
+	} else {
+		db = 6 * Math.log2( v/8192.0 );
+	}
+	return db;
+}
+function updateVMixText( mix, ch ) {
+	var id = "vmix" + mix + "_" + ch;
+	var e = document.getElementById( id );
+	if ( e == null ) {
+		return;
+	}
+	var v = e.value;
+	var id = "vmixt" + mix + "_" + ch;
+	var str = "-\u221EdB";
+	var db = vmixToDb( v );
+	if ( db > -72.0 ) {
+    	str = db.toFixed(1) + "dB";
+		if ( db > 0 ) {
+			str = "+" + str;
+		}
+	}
+	document.getElementById( id ).innerHTML = str;
+}
+function updateVPanText( mix, ch ) {
+	var id = "vpan" + mix + "_" + ch;
+	var e = document.getElementById( id );
+	if ( e == null ) {
+		return;
+	}
+	var v = e.value;
+	var id = "vpant" + mix + "_" + ch;
+	if ( v == 0 )
+		str = "C";
+	else if ( v > 0 )
+		str = v + "R";
+	else
+		str = (-v) + "L";
+	document.getElementById( id ).innerHTML = str;
+}
+function modifyMix( mix, ch, v ) {
+	var id = "mix" + mix + "_" + ch;
+	document.getElementById( id ).value = v;
+	mixSlider( mix, ch );
+}
+function vmixSlider( mix, ch, stereo ) {
+	var id = "vmix" + mix + "_" + ch;
+	var v = parseInt( document.getElementById( id ).value );
+
+	updateVMixText( mix, ch );
+
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x34, mix * 8 + ch, v, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent mix update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+	makeDownloadInvalid();
+}
+function vmixDoubleClick( mix, ch, stereo ) {
+	var id = "vmix" + mix + "_" + ch;
+	var v = parseInt( document.getElementById( id ).value );
+	
+	if ( v == 103 ) {
+		document.getElementById( id ).value = 0;
+	} else {
+		document.getElementById( id ).value = 103;
+	}
+
+	vmixSlider( mix, ch, stereo );
+}
+function vmixTextDblClick( mix, ch, stereo ) {
+	let id = "vmixt" + mix + "_" + ch;
+	let v = prompt( "Enter mix value", document.getElementById( id ).innerHTML );
+	if ( v == null ) {
+		return;
+	}
+	v = parseFloat( v );
+	if ( isNaN( v ) ) {
+		return;
+	}
+	id = "vmix" + mix + "_" + ch;
+	document.getElementById( id ).value = dbToVmix( v );
+	vmixSlider( mix, ch, stereo );
+}
+function vpanSlider( mix, ch, stereo ) {
+	var id = "vpan" + mix + "_" + ch;
+	var v = parseInt( document.getElementById( id ).value );
+
+	updateVPanText( mix, ch );
+
+	var output = midi.outputs.get( document.getElementById( "midioutput" ).value );
+	var arr = [ 0xF0, 0x00, 0x21, 0x27, 0x19, 0x34, (mix+1) * 8 + ch, 64+v, 0xF7 ];
+	output.send( arr );
+	var dd = log( "sent mix update to ES-9" );
+	dumpSysex( arr, "txSysex", dd+"\n" );
+	makeDownloadInvalid();
+}
+if ( navigator.requestMIDIAccess ) {
+    navigator.requestMIDIAccess ( {
+        sysex: true
+    } ).then(onMIDISuccess, onMIDIFailure);
+} else {
+    status("No MIDI support in your browser.");
+}
+
+rebuildMixer();
+
+</script>
+
+</body>
