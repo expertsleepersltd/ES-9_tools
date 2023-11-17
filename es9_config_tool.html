@@ -602,7 +602,9 @@ function writeCaptureSelect( dsp, ch ) {
 	for ( i=0; i<8; ++i ) {
 		str += "<option value=" + (0x20+i) + ">MIX&nbsp;" + (i+1) + "</option>";
 	}
-	str += "<option value=48>S/PDIF L</option><option value=49>S/PDIF R</option>";
+	for ( i=0; i<8; ++i ) {
+		str += "<option value=" + (0x30+i) + ">MIX&nbsp;" + (i+9) + "</option>";
+	}
 	str += "</select></td>";
 	document.write( str );
 }
@@ -1429,6 +1431,16 @@ function updateOptions( options ) {
 		label = "&#x21E9;<br>Mixer 2<br>&#x21E9;";
 	}
     document.getElementById("dsp3_table_label" ).innerHTML = label;
+    let txt1 = sh ? "S/PDIF L" : "MIX 9";
+    let txt2 = sh ? "S/PDIF R" : "MIX 10";
+    for ( let dsp=0; dsp<4; ++dsp ) {
+    	for ( let ch=0; ch<8; ++ch ) {
+			let id = "cs" + dsp + "_" + ch;
+			let sel = document.getElementById( id );
+			sel.options[54].text = txt1;
+			sel.options[55].text = txt2;
+    	}
+    }
 	sh = !sh;
 	for ( m=2; m<8; ++m ) {
 		showHide( "cs3_" + m, sh );
